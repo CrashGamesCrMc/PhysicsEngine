@@ -36,4 +36,8 @@ public class Vector2d extends Vector {
 		return new Vector2d(0, 0);
 	}
 
+	public double GetYaw() {
+		return Math.atan(values[1] / values[0]);
+	}
+
 }

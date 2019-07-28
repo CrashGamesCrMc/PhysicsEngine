@@ -6,13 +6,15 @@ import io.github.crashgamescrmc.PhysicsEngine.shape.Shape;
 public class MassObject<VT extends Vector> {
 
 	@SuppressWarnings("unchecked")
-	public MassObject(double mass, VT position, VT velocity) {
+	public MassObject(PhysicsEngine<VT> engine, double mass, VT position, VT velocity) {
 		this.mass = mass;
 		this.position = position;
 		this.velocity = velocity;
+		this.engine = engine;
 
 		acceleration = (VT) position.CreateClearVector();
-		if (Settings.MassObject_collective_update) {
+		if (engine.getSettings().MassObject_enable_registry) {
+			engine.getMassObjectRegistry().Register(this);
 		}
 	}
 
@@ -21,6 +23,7 @@ public class MassObject<VT extends Vector> {
 	protected VT velocity;
 	protected VT acceleration;
 	protected Shape shape;
+	private PhysicsEngine<VT> engine;
 
 	public double getMass() {
 		return mass;
@@ -58,7 +61,7 @@ public class MassObject<VT extends Vector> {
 		position.Add(Vector.Multiply(Vector.Multiply(acceleration, 0.5), time * time));
 		System.out.println("End update (speed " + velocity + ")");
 
-		if (Settings.MassObject_clean_after_update) {
+		if (engine.getSettings().MassObject_enable_clean_after_update) {
 			acceleration = (VT) position.CreateClearVector();
 		}
 	}
@@ -74,12 +77,15 @@ public class MassObject<VT extends Vector> {
 	 */
 	@SuppressWarnings("unchecked")
 	public void Collide(MassObject<VT> massObject) {
-		velocity = (VT) Vector.Add(Vector.Multiply(velocity, (mass - massObject.mass) / (mass + massObject.mass)),
-				Vector.Multiply(massObject.velocity, 2 * massObject.mass / (mass + massObject.mass)));
+		/*velocity = (VT) Vector.Add(Vector.Multiply(velocity, (mass - massObject.mass) / (mass + massObject.mass)),
+				Vector.Multiply(massObject.velocity, 2 * massObject.mass / (mass + massObject.mass)));*/
+		
 	}
 
-	public boolean CollisionTest(MassObject<VT> massObject) {
-		return shape.Intersection(massObject.shape).crosses;
+	public void CollisionTest(MassObject<VT> massObject) {
+		if (shape.Intersection(massObject.shape).crosses) {
+			Collide(massObject);
+		}
 	}
 
 	/**

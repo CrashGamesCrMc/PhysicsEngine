@@ -5,30 +5,43 @@ import java.util.List;
 
 import io.github.crashgamescrmc.PhysicsEngine.math.vector.Vector;
 
-@SuppressWarnings("rawtypes")
-public class MassObjectRegistry {
+public class MassObjectRegistry<VT extends Vector> {
 
-	private List<MassObject> massObjects = new ArrayList<MassObject>();
+	private List<MassObject<VT>> massObjects = new ArrayList<MassObject<VT>>();
 
-	public void CollectiveUpdate(double time) {
-		for (MassObject obj : massObjects) {
+	public void UpdateMassObjects(double time) {
+		for (MassObject<VT> obj : massObjects) {
 			obj.Update(time);
 		}
 	}
 
-	public List<MassObject> getMassObjects() {
+	public void CollisionTests() {
+		for (MassObject<VT> obj : massObjects) {
+			for (MassObject<VT> obj2 : massObjects) {
+				if (obj == obj2) {
+					continue;
+				}
+				obj.CollisionTest(obj2);
+			}
+		}
+	}
+
+	public void ApplyUniversalAcceleration(VT vector) {
+		for (MassObject<VT> obj : massObjects) {
+			obj.ApplyAcceleration(vector);
+		}
+	}
+
+	public void Register(MassObject<VT> massObject) {
+		massObjects.add(massObject);
+	}
+
+	public List<MassObject<VT>> getMassObjects() {
 		return massObjects;
 	}
 
-	public void setMassObjects(List<MassObject> massObjects) {
+	public void setMassObjects(List<MassObject<VT>> massObjects) {
 		this.massObjects = massObjects;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void ApplyUniversalAcceleration(Vector vector) {
-		for (MassObject obj : massObjects) {
-			obj.ApplyAcceleration(vector);
-		}
 	}
 
 }

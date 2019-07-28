@@ -1,5 +1,6 @@
 package io.github.crashgamescrmc.PhysicsEngine.shape;
 
+import io.github.crashgamescrmc.PhysicsEngine.MassObject;
 import io.github.crashgamescrmc.PhysicsEngine.math.vector.Vector;
 import io.github.crashgamescrmc.PhysicsEngine.math.vector.Vector2d;
 
@@ -49,6 +50,11 @@ public class Shape2d extends Shape {
 			}
 		}
 		return new EdgeIntersection(false);
+	}
+
+	@Override
+	public <VT extends Vector> void Collide(MassObject<VT> massObject, MassObject<VT> massObject2) {
+		throw new Exception();
 	}
 
 }
